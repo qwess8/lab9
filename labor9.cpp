@@ -111,34 +111,85 @@ void DiFSA(node** A, int size, int* dist, int s) {
     }
 }
 
+void DiFSD(int** G,int size, int *dist, int s, int d){
+	dist[s] = d;
+	for(int i = 0;i<size;i++){
+		if(G[s][i] == 1 && (dist[i] ==-1||dist[i] > d)){
+			(d)++;
+			DiFSD(G, size, dist, i, d);
+			(d)--;
+		}
+	}
+}
+
+void DiFSAD(node** A, int *dist, int s, int d){
+	dist[s] = d;
+	node* current = A[s];
+	while(current!= NULL){
+		if(dist[current->data] == -1 || dist[current->data]>d){
+			d++;
+			DiFSAD(A, dist, current->data, d);
+			d--;
+		}
+		current = current->next;
+	}
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	setlocale(LC_ALL, "Rus");
 	srand(time(NULL));
-    int nG = 5;
+    int nG = 500;
 	int* dist = (int*)malloc(sizeof(int) * nG);
 	int** G = createG(nG);
+	float spent_time;
+	clock_t start, end;
 	node** A = createAdj(G, nG);
-	printG(G,nG);
-	printAdj(A,nG);
+	//printG(G,nG);
+	//printAdj(A,nG);
 
 	for(int i = 0; i < nG; i++) dist[i] = -1;
 
+	start = clock();
 	DiFS(G, nG, dist, 0);
+	end = clock();
+	spent_time = (float)(end - start) / CLOCKS_PER_SEC;
+	printf("n: %d\nDiFS;%.3f;\n",nG, spent_time);
+	
 
-	printf("\n");
-	for(int i = 0; i < nG; i++){
-		printf("%d: %d\n", i, dist[i]);
-	}
+	//printf("\n");
+	//for(int i = 0; i < nG; i++){
+		//printf("%d: %d\n", i, dist[i]);
+	//}
 
 	for(int i = 0; i < nG; i++) dist[i] = -1;
 
+	start = clock();
 	DiFSA(A, nG, dist, 0);
+	end = clock();
+	spent_time = (float)(end - start) / CLOCKS_PER_SEC;
+	printf("n: %d\nDiFSA;%.3f;\n",nG, spent_time);
+	
 
-	printf("\n");
-	for(int i = 0; i < nG; i++){
-		printf("%d: %d\n", i, dist[i]);
-	}
+	for(int i = 0; i < nG; i++) dist[i] = -1;
+
+	start = clock();
+	DiFSAD(A, dist, 0, 0);
+	end = clock();
+	spent_time = (float)(end - start) / CLOCKS_PER_SEC;
+	printf("n: %d\nDiFSAD;%.3f;\n",nG, spent_time);
+
+	for(int i = 0; i < nG; i++) dist[i] = -1;
+
+	start = clock();
+	DiFSD(G, nG, dist, 0, 0);
+	end = clock();
+	spent_time = (float)(end - start) / CLOCKS_PER_SEC;
+	printf("n: %d\nDiFSD;%.3f;\n",nG, spent_time);
+	
+
+	
+	
 
 	getchar();
 	
